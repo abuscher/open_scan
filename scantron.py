@@ -190,7 +190,8 @@ def read_file(pfile):
     avg = sum(dim) / 2
 
     ret, thresh = cv2.threshold(gray, 127, 255, 1)
-    _, contours, h = cv2.findContours(thresh, 1, 2)
+    #_, contours, h = cv2.findContours(thresh, 1, 2)
+    contours, h = cv2.findContours(thresh, 1, 2)
     tris = []
 
     for cnt in contours:
@@ -219,11 +220,13 @@ def read_file(pfile):
     gray = cv2.warpAffine(gray, M, (cols, rows))
 
     ret, thresh = cv2.threshold(gray, 127, 255, 1)
-    _, contours, h = cv2.findContours(thresh, 1, 2)
+    contours, h = cv2.findContours(thresh, 1, 2)
+    #_, contours, h = cv2.findContours(thresh, 1, 2)
 
 # find points
     ret, thresh = cv2.threshold(gray, 127, 255, 1)
-    _, contours, h = cv2.findContours(thresh, 1, 2)
+    #_, contours, h = cv2.findContours(thresh, 1, 2)
+    contours, h = cv2.findContours(thresh, 1, 2)
     tris = []
     for cnt in contours:
         approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
