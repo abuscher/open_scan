@@ -1,11 +1,9 @@
 # open_scan
-A set of tools to create multiple choice tests, grade them, and write results to an excel file.  
+A set of tools to create multiple choice tests, grade them, and write results to an excel file or output a string of results.  
 
-Runs in Python27.
+Runs in Python 2.7 and 3.4.
 
-Requires OpenCV2, xlwt, and numpy.  The modules xlwt and numpy can be installed with pip.
-
-OpenCV3 can be used, scantron.py just needs each cv2 replaced with cv3 and cv.findContours needs 3 return values (first one ignored)
+Requires OpenCV, xlwt, and numpy.  OpenCV 2 or 3 can be used.
 
 OpenCV installation is less trivial.  Download version 3.0 or newer.  See downloads page here: http://opencv.org/downloads.html
 

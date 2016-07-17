@@ -81,7 +81,7 @@ def write(folder,key, all_ID, all_score, all_correct, all_answer):
     sheet2.write(0, 0, 'Problem')    # A1
     sheet2.write(0, 1, '% Correct')  # B1
 
-    for i in xrange(len(key)):
+    for i in range(len(key)):
         sheet2.row(i+1).set_cell_number(0, i+1)
         sheet2.row(i+1).set_cell_number(1, col_totals[i]/float(num_students), pstyle)
 
@@ -96,10 +96,10 @@ def write(folder,key, all_ID, all_score, all_correct, all_answer):
         sheet3.col(j+2).width = 2000
         ID = all_ID[j]
         sheet3.row(0).set_cell_number(j+2, ID)
-        for i in xrange(len(key)):
+        for i in range(len(key)):
             sheet3.write(i+1, j+2, letters[all_answer[j][i]])
 
-    for i in xrange(len(key)):
+    for i in range(len(key)):
         sheet3.row(i+1).set_cell_number(0, i+1)
         sheet3.write(i+1, 1, letters[key[i]])
 

@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+sys.path.append('/usr/local/lib/python3.4/site-packages')
 import cv2
 import os
 
@@ -9,8 +11,8 @@ TEST_NUM_OPTIONS = 5
 NUM_GAPS = 4
 ID_LENGTH = 5
 ID_NUM = 5
-NUM_PROB_COL = NUM_PROB / NUM_COL
-PROB_PER_GROUP = NUM_PROB_COL / (NUM_GAPS+1)
+NUM_PROB_COL = NUM_PROB // NUM_COL
+PROB_PER_GROUP = NUM_PROB_COL // (NUM_GAPS+1)
 
 def x_low(tri):  
     return min([tri[0][0], tri[1][0], tri[2][0]])
@@ -46,14 +48,14 @@ def check_cell_old(img, point, cell_width):
 
 def check_cell(img, point, width):
     threshold = width*width*256.
-    hw = width / 2
+    hw = width // 2
     spot = img[point[1]-hw:point[1]+hw, point[0]-hw:point[0]+hw]
     total_sum = sum(sum(x) for x in spot)
-    if total_sum / threshold<.8:
+    #print (width, hw, total_sum)
+    if total_sum / threshold < .8:
         return True
     else:
         return False
-
 
 def minmax_xy(tri, xoy, mm):
     #  returns the index of the min, as opposed to min value
@@ -77,7 +79,7 @@ def grade_test(pfile, key, xls = False):
             startPoint = points[0]
         else:
             startPoint = points[3]
-        gap_offset = (problem % NUM_PROB_COL) / PROB_PER_GROUP
+        gap_offset = (problem % NUM_PROB_COL) // PROB_PER_GROUP
         y = startPoint[1]+int(length1*(problem % NUM_PROB_COL+gap_offset)) # y doesnt change for a given problem, only x
 
         numfill = 0
@@ -108,8 +110,8 @@ def grade_test(pfile, key, xls = False):
                 correct_list[problem] = True
     #print("ID number:", ID)
     #print("Number Correct:", total_correct, " / ", num_problems)
-    print "ID number:", ID
-    print "Number Correct:", total_correct, " / ", num_problems
+    #print ("ID number:", ID)
+    #print ("Number Correct:", total_correct, " / ", num_problems)
     if xls:
         return total_correct, correct_list, ID, answer_list
 #    cv2.namedWindow("img Window", cv2.WINDOW_NORMAL)
@@ -155,7 +157,7 @@ def read_key(pfile):
             startPoint = points[0] # first column
         else:
             startPoint = points[3] # second column
-        gap_offset = (problem % NUM_PROB_COL) / PROB_PER_GROUP
+        gap_offset = (problem % NUM_PROB_COL) // PROB_PER_GROUP
         y = startPoint[1]+int(length1*(problem % (NUM_PROB_COL)+gap_offset))
 
         # y, xList = find_xy_spot(problem, points, startPoint)
@@ -173,7 +175,7 @@ def read_key(pfile):
                 print ("error: more than 1 bubble marked on", problem+1)
         if num_fill == 0:
             #print ("Number of problems read in key:", problem)
-            print "Number of problems read in key:", problem
+            print("Number of problems read in key:", problem)
             break
 
 #    cv2.namedWindow("img Window", cv2.WINDOW_NORMAL)
@@ -187,16 +189,18 @@ def read_file(pfile):
     img = cv2.imread(pfile)
     gray = cv2.imread(pfile, 0)
     dim = [len(img), len(img[1])]
-    avg = sum(dim) / 2
+    avg = sum(dim) // 2
 
     ret, thresh = cv2.threshold(gray, 127, 255, 1)
-    #_, contours, h = cv2.findContours(thresh, 1, 2)
-    contours, h = cv2.findContours(thresh, 1, 2)
+    if cv2.__version__[0]=='3':
+        _, contours, h = cv2.findContours(thresh, 1, 2)
+    else:    
+        contours, h = cv2.findContours(thresh, 1, 2)
     tris = []
 
     for cnt in contours:
         approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
-        if len(approx) == 3 and cv2.arcLength(cnt, True) > avg / 10:
+        if len(approx) == 3 and cv2.arcLength(cnt, True) > avg // 10:
             tris.append([list(approx[0][0]), list(approx[1][0]), list(approx[2][0])])
             cv2.drawContours(img, [cnt], 0, (0, 255, 0), -1)
 
@@ -220,13 +224,16 @@ def read_file(pfile):
     gray = cv2.warpAffine(gray, M, (cols, rows))
 
     ret, thresh = cv2.threshold(gray, 127, 255, 1)
-    contours, h = cv2.findContours(thresh, 1, 2)
-    #_, contours, h = cv2.findContours(thresh, 1, 2)
-
+    if cv2.__version__[0]=='3':
+        _, contours, h = cv2.findContours(thresh, 1, 2)
+    else:
+        contours, h = cv2.findContours(thresh, 1, 2)
 # find points
     ret, thresh = cv2.threshold(gray, 127, 255, 1)
-    #_, contours, h = cv2.findContours(thresh, 1, 2)
-    contours, h = cv2.findContours(thresh, 1, 2)
+    if cv2.__version__[0]=='3':
+        _, contours, h = cv2.findContours(thresh, 1, 2)
+    else:
+        contours, h = cv2.findContours(thresh, 1, 2)
     tris = []
     for cnt in contours:
         approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
@@ -253,7 +260,7 @@ def read_file(pfile):
 
     full_length = points[1][1]-points[0][1]
     full_width = min(points[2][0]-points[0][0], points[8][0]-points[7][0])
-    cell_width = full_width*2 / (4*TEST_NUM_OPTIONS-4) # 16 for 5, 
+    cell_width = full_width*2 // (4*TEST_NUM_OPTIONS-4) # 16 for 5, 
     length1 = float(full_length) / float(NUM_PROB_COL+NUM_GAPS-1)
     width1 = float(full_width) / float(TEST_NUM_OPTIONS-1)
 

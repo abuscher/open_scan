@@ -1,23 +1,26 @@
 def process(filein,folder):
     import os
-    pdf = file(filein, "rb").read()
+    #pdf = file(os.path.join(folder,filein), "rb").read()
+    
+    f=open(os.path.join(folder,filein), "rb")
+    pdf=f.read()
 
-    start_mark = "\xff\xd8"
+    start_mark = b'\xff\xd8'
     start_fix = 0
-    end_mark = "\xff\xd9"
+    end_mark = b'\xff\xd9'
     end_fix = 2
     i = 0
 
     num_jpg = 0
     while True:
-        istream = pdf.find("stream", i)
+        istream = pdf.find(b'stream', i)
         if istream < 0:
             break
         istart = pdf.find(start_mark, istream, istream+20)
         if istart < 0:
             i = istream+20
             continue
-        iend = pdf.find("endstream", istart)
+        iend = pdf.find(b'endstream', istart)
         if iend < 0:
             raise Exception("Didn't find end of stream!")
         iend = pdf.find(end_mark, iend-20)
@@ -34,7 +37,7 @@ def process(filein,folder):
         if not os.path.exists(folder):
             os.makedirs(folder)
         fileout = os.path.join(folder, name)
-        jpg_file = file(fileout, "wb")
+        jpg_file = open(fileout, "wb")
         jpg_file.write(jpg)
         jpg_file.close()
 
@@ -45,9 +48,9 @@ def process(filein,folder):
 
 
 def main():
-    folder,students=process('tests.pdf','.')
+    folder,students=process('tests.pdf','input1')
     print(folder)
-    print (students)
+    print(students)
 
 if __name__ == '__main__':
     main()
